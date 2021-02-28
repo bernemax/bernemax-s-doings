@@ -11,7 +11,7 @@ New stuff will be added if progress is made.
 * A little networt structure was created (5-x-node model).
 * Based on this, several models, aiming for different objectives, will be added.
 
-
+![](https://github.com/bernemax/bernemax-s-doings/blob/main/pictures/5-X-node.jpg)
 
 
 
