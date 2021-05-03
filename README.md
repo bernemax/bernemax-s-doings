@@ -3,7 +3,11 @@
 ## Topic: Garvers 6-node model
 
 This repository serves as **training room**. 
-New stuff will be added if progress is made.
+Two objectives are inplemented into the model:
+1) total cost minimization
+- amount of investment into lines: 100
+2) minimization of investment-costs
+- amount of investment into lines: 70
 
 
 ## Content
