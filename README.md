@@ -7,6 +7,7 @@ Two objectives are inplemented into the model:
 
 **1) Total cost minimization**
 - amount of investment into lines: 100 
+
 **2) Investment-costs minimization**
 - amount of investment into lines: 70
 
