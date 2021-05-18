@@ -154,7 +154,7 @@ Balance(n)..                                                Demand_data(n,'Need'
                                                                                                     =e= sum(g$MapG(g,n),Power_gen(g)) 
 
                                                                                                      + sum((k,bus)$Map_lines(n,bus),Power_flow(bus,n,k))
-                                                                                                     - sum((k,bus)$Map_lines(n,bus),Power_flow(n,bus,k))
+*                                                                                                     - sum((k,bus)$Map_lines(n,bus),Power_flow(n,bus,k))
 ;
 
 Ex_line_neg_flow(n,bus,k)$Map_lines(n,bus)..                power_flow(n,bus,k) =g= - Line_data(n,bus,'L_cap')
