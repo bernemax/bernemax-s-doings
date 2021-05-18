@@ -12,8 +12,16 @@ ref(n)      /n1/
 ;
 alias (n,bus)
 ;
-$setglobal NO_LS_Invest "*"  if "*" objectiv function is to minimize investment-costs, load shedding has to be deaktivated 
+*#######################################model objective setup##############################
+
+* adjust NO_LS_Invest to  "*" and Costs_only to ""  -> investment costs are minimized
+* adjust NO_LS_Invest to  ""  and Costs_only to "*" -> total sytem costs are minimized
+
+$setglobal NO_LS_Invest ""    if "*" objectiv function is to minimize investment-costs
 ;
+$setglobal Costs_only "*"     if "*" objectiv function is to minimize total system costs
+;
+*######################################parameter definitions###############################
 Table Generator_data (g,*)
         Gen_cap     Gen_costs
 g1      400         15
@@ -137,10 +145,12 @@ Total_costs..                                costs =e=  sum((n,bus,k)$Map_lines(
                                                      +  sum(n,Demand_data(n,'LS_costs') * Load_shed(n))
                                                     
 ;
-Line_investment..                             sum((n,bus,k)$Map_lines(n,bus),  Line_data(n,bus,'I_costs') * x(n,bus,k)$(ord(k)>1 or Line_data(n,bus,'stat') = 0))  =e= Investment_costs
+Line_investment..                             sum((n,bus,k)$Map_lines(n,bus),  Line_data(n,bus,'I_costs') * x(n,bus,k)$(ord(k)>1 or Line_data(n,bus,'stat') = 0))
+                                           +  sum(n,Demand_data(n,'LS_costs') * Load_shed(n))
+                                                                                                    =e= Investment_costs
 ;
 Balance(n)..                                                Demand_data(n,'Need')
-%NO_LS_Invest%                                                                     - Load_shed(n) 
+                                                                                    - Load_shed(n) 
                                                                                                     =e= sum(g$MapG(g,n),Power_gen(g)) 
 
                                                                                                      + sum((k,bus)$Map_lines(n,bus),Power_flow(bus,n,k))
@@ -159,7 +169,7 @@ Linearization_prosp_line_neg(n,bus,k)$Map_lines(bus,n)..    -(1-x(n,bus,k))*M   
 ;
 Linearization_prosp_line_pos(n,bus,k)$Map_lines(n,bus)..    (1-x(n,bus,k))*M    =g= power_flow(n,bus,k) - Line_data(n,bus,'b') * (Theta(n)-Theta(bus)) *100
 ;
-Gen_det_up(n,g)..                                             power_gen(g)  =l= Generator_data(g,'Gen_cap')
+Gen_det_up(n,g)..                                           power_gen(g)  =l= Generator_data(g,'Gen_cap')
 ;
 LS_det(n)..                                                 load_shed(n)  =l= Demand_data(n,'Need')
 ;
@@ -174,7 +184,8 @@ Model Stat_det_Tep /all/;
 
 option optcr =0
 ;
-solve Stat_det_Tep using MIP minimizing investment_costs;
+%Costs_only%     solve Stat_det_Tep using MIP minimizing investment_costs;
+%NO_LS_Invest%   solve Stat_det_Tep using MIP minimizing costs;
 
 price(n) = (balance.m(n))*(-1);
 
