@@ -18,10 +18,10 @@ Two objectives are inplemented into the model:
 * Based on this, several models, aiming for different objectives, will be added.
 
 ## Network
-![](https://github.com/bernemax/bernemax-s-doings/blob/Garvers/pictures/Garvers%206%20node.jpg)
+![](https://github.com/bernemax/bernemax-s-doings/blob/IEEE-24-node-system/pictures/24%20IEEE%20node%20system.jpg)
 
 ## Bus data
-![](https://github.com/bernemax/bernemax-s-doings/blob/Garvers/pictures/bus%20data.jpg)
+
 
 ## Line data
-![](https://github.com/bernemax/bernemax-s-doings/blob/Garvers/pictures/Line%20Data.jpg)
+
