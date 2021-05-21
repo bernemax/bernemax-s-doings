@@ -1,20 +1,20 @@
 # bernemax doings 
 
-## Topic: Garvers 6-node model
+## Topic: IEEE 24 node system
 
 This repository serves as **training room**. 
 Two objectives are inplemented into the model:
 
 **1) Total cost minimization**
-- amount of investment into lines: 198 
+- amount of investment into lines: xxx
 
 **2) Investment-costs minimization**
-- amount of investment into lines: 140
+- amount of investment into lines: xxx
 
 
 ## Content
 * There is an existing "Model-base" which is about the so-called "Transmission extension problem".
-* A little networt structure was taken from the Garvers 6 node structure (see picture below).
+* A little networt structure was taken from the IEEE 24 (test case system) node structure (see picture below).
 * Based on this, several models, aiming for different objectives, will be added.
 
 ## Network
