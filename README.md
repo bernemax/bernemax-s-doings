@@ -27,7 +27,7 @@ Two objectives are inplemented into the model:
 ![](https://github.com/bernemax/bernemax-s-doings/blob/Garvers/pictures/Line%20Data.jpg)
 
 ## Generator Data
-                Generation Gapacity        Generation Costs
-Generator 1             400                       15
-Generator 2             400                       20
-Generator 3             600                       22
+                 Generation Gapacity        Generation Costs
+*Generator 1             400                       15
+*Generator 2             400                       20
+*Generator 3             600                       22
