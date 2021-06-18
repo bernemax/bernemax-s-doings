@@ -29,5 +29,7 @@ Two objectives are inplemented into the model:
 ## Generator Data
                  Generation Gapacity        Generation Costs
 *Generator1             400                       15
+
 *Generator2             400                       20
+
 *Generator3             600                       22
