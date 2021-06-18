@@ -12,16 +12,10 @@ ref(n)      /n1/
 ;
 alias (n,bus)
 ;
-*#######################################model objective setup##############################
-
-* adjust NO_LS_Invest to  "*" and Costs_only to ""  -> investment costs are minimized
-* adjust NO_LS_Invest to  ""  and Costs_only to "*" -> total sytem costs are minimized
-
 $setglobal NO_LS_Invest ""    if "*" objectiv function is to minimize investment-costs
 ;
 $setglobal Costs_only "*"     if "*" objectiv function is to minimize total system costs
 ;
-*######################################parameter definitions###############################
 Table Generator_data (g,*)
         Gen_cap     Gen_costs
 g1      400         15
@@ -35,7 +29,7 @@ n2      240         3000
 n3      40          3000
 n4      160         3000
 n5      240         3000
-n6      0           3000
+n6      50          3000
 ;
 $ontext
 Table Line_data (n,bus,*)
@@ -73,7 +67,7 @@ n5.n6      0.61        61          78           0
 Set
 Map_lines(n,bus)
 ;
-Map_lines(n,bus)$line_data(n,bus,'react') = yes
+Map_lines(n,bus)$line_data(n,bus,'L_cap') = yes
 ;
 Map_lines(n,bus)$Map_lines(bus,n) = yes
 ;
@@ -113,9 +107,9 @@ Load_shed(n)
 binary variables
 x(n,bus,k)
 ;
-x.l(n,bus,k) = 1
+*x.l(n,bus,k) = 0
 ;
-x.fx(n,bus,k)$(Map_lines(n,bus) and ord (k) = 1 and Line_data(n,bus,'stat')) = 1
+*x.fx(n,bus,k)$(Map_lines(n,bus) and ord (k) = 1 and Line_data(n,bus,'stat')) = 1
 ;
 
 
@@ -145,8 +139,8 @@ Total_costs..                                costs =e=  sum((n,bus,k)$Map_lines(
                                                      +  sum(n,Demand_data(n,'LS_costs') * Load_shed(n))
                                                     
 ;
-Line_investment..                             sum((n,bus,k)$Map_lines(n,bus),  Line_data(n,bus,'I_costs') * x(n,bus,k)$(ord(k)>1 or Line_data(n,bus,'stat') = 0))
-                                           +  sum(n,Demand_data(n,'LS_costs') * Load_shed(n))
+Line_investment..                                       sum((n,bus,k)$Map_lines(n,bus),  Line_data(n,bus,'I_costs') * x(n,bus,k)$(ord(k)>1 or Line_data(n,bus,'stat') = 0))
+%Costs_only%                                         +  sum(n,Demand_data(n,'LS_costs') * Load_shed(n))
                                                                                                     =e= Investment_costs
 ;
 Balance(n)..                                                Demand_data(n,'Need')
@@ -154,7 +148,7 @@ Balance(n)..                                                Demand_data(n,'Need'
                                                                                                     =e= sum(g$MapG(g,n),Power_gen(g)) 
 
                                                                                                      + sum((k,bus)$Map_lines(n,bus),Power_flow(bus,n,k))
-*                                                                                                     - sum((k,bus)$Map_lines(n,bus),Power_flow(n,bus,k))
+                                                                                                     - sum((k,bus)$Map_lines(n,bus),Power_flow(n,bus,k))
 ;
 
 Ex_line_neg_flow(n,bus,k)$Map_lines(n,bus)..                power_flow(n,bus,k) =g= - Line_data(n,bus,'L_cap')
