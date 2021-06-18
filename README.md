@@ -27,6 +27,6 @@ Two objectives are inplemented into the model:
 ![](https://github.com/bernemax/bernemax-s-doings/blob/Garvers/pictures/Line%20Data.jpg)
 
 ## Generator Data
-![]
+![](https://github.com/bernemax/bernemax-s-doings/blob/Garvers/pictures/Garvers%20Gen%20Data.jpg)
 
 
