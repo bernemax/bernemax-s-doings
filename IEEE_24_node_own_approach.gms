@@ -21,16 +21,13 @@ exist_nodes(n) /n1*n24/
 prosp_nodes(n) /n25*n32/
 exist_lines(l) /l1*l34/
 prosp_lines(l) /l35*l60/
-Map_send(l,n)               mapping of sending-line to node
-Map_res(l,n)                mapping of resiving-line to node
-Map_gen(g,n)                mapping of the generation to node
-Map_prosp_send_Line_node(l,n) /l55.n20,l56.n25,l57.n26,l58.n27,l59.n27,l60.n29/
-Map_prosp_res_Line_node(l,n)  /l36.n30,l38.n29,l39.n30,l44.n28,l45.n28,l47.n26,l50.n28,l51.n31,l52.n31,l53.n32,l54.n26,l55.n29,l56.n30,l57.n29,l58.n31,l59.n32,l60.n29/
+Map_send(l,n)                       mapping of sending-line to node
+Map_res(l,n)                        mapping of resiving-line to node
+Map_gen(g,n)                        mapping of the generation to node
+Map_prosp_send_Line_node(l,n)       mapping of prospective sending-line to node
+Map_prosp_res_Line_node(l,n)        mapping of prospective resiving-line to node
 Map_prosp_nodeconnection(l,n)
 ;
-
-Map_prosp_nodeconnection(l,n)$Map_prosp_send_Line_node(l,n)= yes;
-Map_prosp_nodeconnection(l,n)$Map_prosp_res_Line_node(l,n) = yes;
 
 alias
 (t,tt), (year,period)
@@ -113,41 +110,46 @@ n7       0.044      0.044       0.024
 n8       0.06       0.091       0.080
 n9       0.061      0.030       0.041
 n10      0.068      0.038       0.088
-n11      0          0.30        0.040
-n12      0          0.20        0.030
+n11      0          0.030       0.040
+n12      0          0.020       0.030
 n13      0.093      0.093       0.023
 n14      0.068      0.068       0.098
 n15      0.111      0.050       0.081
 n16      0.035      0.035       0.055
-n17      0          0.11        0.017
+n17      0          0.011       0.017
 n18      0.117      0.100       0.060
 n19      0.030      0.030       0.050
-n20      0.045      0.03        0.015
-n21      0          0.10        0.010
-n22      0          0.30        0.025
-n23      0          0.17        0.005
-n24      0          0.17        0
+n20      0.045      0.030       0.015
+n21      0          0.010       0.010
+n22      0          0.030       0.025
+n23      0          0.017       0.005
+n24      0          0.017       0
 n25      0          0           0.020
-n26      0          0.12        0
-n27      0.034      0.01        0.014
+n26      0          0.012       0
+n27      0.034      0.010       0.014
 ;
 *########################################################set & parameter loading####################################################
 $onecho > IEEE.txt
-set=Map_gen             rng=Mapping!A2:B14                rdim=2 cDim=0
-set=Map_send            rng=Mapping!D2:E69                rdim=2 cDim=0    
-set=Map_res             rng=Mapping!G2:H69                rdim=2 cDim=0
+set=Map_gen                     rng=Mapping!A2:B14                rdim=2 cDim=0
+set=Map_send                    rng=Mapping!D2:E35                rdim=2 cDim=0    
+set=Map_res                     rng=Mapping!G2:H35                rdim=2 cDim=0
+set=Map_prosp_send_Line_node    rng=Mapping!J2:K27                rdim=2 cDim=0
+set=Map_prosp_res_Line_node     rng=Mapping!M2:N27                rdim=2 cDim=0
             
-par=genup               rng=Generation!A1:R14             rdim=1 cDim=1
-par=lineup              rng=lines!A2:D70                  rdim=1 cDim=1
+par=genup                       rng=Generation!A1:R14             rdim=1 cDim=1
+par=lineup                      rng=lines!A2:D70                  rdim=1 cDim=1
 
 $offecho
 
 $onUNDF
 $call   gdxxrw Data_IEEE_24.xlsx @IEEE.txt
 $GDXin  Data_IEEE_24.gdx
-$load   Map_gen, Map_send, Map_res
+$load   Map_gen, Map_send, Map_res, Map_prosp_send_Line_node, Map_prosp_res_Line_node
 $load   genup, lineup
 $offUNDF
+;
+Map_prosp_nodeconnection(l,n)$Map_prosp_send_Line_node(l,n)= yes;
+Map_prosp_nodeconnection(l,n)$Map_prosp_res_Line_node(l,n) = yes;
 ;
 **********************************************************parameter assignment*******************************************************
 P_max(g)            =   genup(g,'Pi_max')
@@ -242,22 +244,24 @@ Theta_ref
 ;
 *#################################################################Objective function#############################################
 
-Total_costs..                costs                  =e=   10 * 365 * (sum((g,t,year), gen(g,t,year) * gen_costs(g))
+Total_costs..                costs                  =e=   (sum((g,t,year), gen(g,t,year) * gen_costs(g))
                                                         + sum((g,t,year), Su(g,t,year) * su_costs(g))
-                                                        + sum((n,t,year), LS(n,t,year) * 3000))
+                                                        + sum((n,t,year), LS(n,t,year) * 3000)
+                                                        + sum((n,t,year), X_dem(n,t,year) * 100))
                                 
                                                         + sum((l,t,year),Inv_costs(l,year)* ANF(year) * (x(l,t,year)))
                                 
 ;
 *##################################################################Energy balance################################################
 
-Balance(n,t,year)..          demand(n,t,year) - LS (n,t,year)  =e=  sum(g$Map_gen(g,n), gen(g,t,year))
+Balance(n,t,year)..          demand(n,t,year) - LS (n,t,year) + X_dem(n,t,year) =e=  sum(g$Map_gen(g,n), gen(g,t,year))
 
                                                         + sum(l$Map_res(l,n),power_flow(l,t,year))
                                                         - sum(l$Map_send(l,n),power_flow(l,t,year))
                                                  
-                                                        + sum(l$Map_prosp_send_Line_node(l,n), power_flow(l,t,year))
-                                                        - sum(l$Map_prosp_res_Line_node(l,n), power_flow(l,t,year))
+                                                        + sum(l$Map_prosp_res_Line_node(l,n), power_flow(l,t,year))
+                                                        - sum(l$Map_prosp_send_Line_node(l,n), power_flow(l,t,year))
+                                                      
 
 ;
 *##################################################################Investment budget#############################################
@@ -287,20 +291,20 @@ P_on_start(g,t,year)$(ord(t) = 1)..                     P_on(g,t,year) =e= P_ini
 
 *###############################################################Grid technical functioning#########################################
 
-Ex_line_angle(l,t,year)$exist_lines(l)..                     power_flow(l,t,year) =e=  (B(l)*(sum(n$Map_send(l,n), Theta(n,t,year))-sum(n$Map_res(l,n), Theta(n,t,year)))) 
+Ex_line_angle(l,t,year)$exist_lines(l)..                     power_flow(l,t,year) =e=  (B(l)*(sum(n$Map_send(l,n), Theta(n,t,year))-sum(n$Map_res(l,n), Theta(n,t,year)))) * Sbase
 ;
 Ex_line_neg_flow(l,t,year)$exist_lines(l)..                  power_flow(l,t,year) =g= -Line_cap(l)
 ;
 Ex_line_pos_flow(l,t,year)$exist_lines(l)..                  power_flow(l,t,year) =l=  Line_cap(l)
 ;
 
-Prosp_line_neg_flow(l,t,year)$prosp_lines(l)..               power_flow(l,t,year) =g= -sum((tt,period)$((ord(tt) le ord(t))and (ord(period) le ord(year))),x(l,tt,period) * Line_cap(l))  
+Prosp_line_neg_flow(l,t,year)$prosp_lines(l)..               power_flow(l,t,year) =g= -sum((tt,period)$((ord(tt) le ord(t))and (ord(period) le ord(year))),x(l,tt,period) * Line_cap(l))  * Sbase
 ;
-Prosp_line_pos_flow(l,t,year)$prosp_lines(l)..               power_flow(l,t,year) =l=  sum((tt,period)$((ord(tt) le ord(t))and (ord(period) le ord(year))),x(l,tt,period) * Line_cap(l))   
+Prosp_line_pos_flow(l,t,year)$prosp_lines(l)..               power_flow(l,t,year) =l=  sum((tt,period)$((ord(tt) le ord(t))and (ord(period) le ord(year))),x(l,tt,period) * Line_cap(l))  * Sbase
 ;
-Linearization_prosp_line_neg(l,t,year)$prosp_lines(l)..      -sum((tt,period)$((ord(tt) le ord(t))and (ord(period) le ord(year))),(1-x(l,tt,period)))*M   =l= power_flow(l,t,year) - B(l) * (sum(n$Map_send(l,n),Theta(n,t,year))-sum(n$Map_res(l,n),Theta(n,t,year)))
+Linearization_prosp_line_neg(l,t,year)$prosp_lines(l)..      -sum((tt,period)$((ord(tt) le ord(t))and (ord(period) le ord(year))),(1-x(l,tt,period)))*M   =l= power_flow(l,t,year) - B(l) * (sum(n$Map_send(l,n),Theta(n,t,year))-sum(n$Map_res(l,n),Theta(n,t,year))) * Sbase
 ;
-Linearization_prosp_line_pos(l,t,year)$prosp_lines(l)..      sum((tt,period)$((ord(tt) le ord(t))and (ord(period) le ord(year))),(1-x(l,tt,period)))*M    =g= power_flow(l,t,year) - B(l) * (sum(n$Map_send(l,n),Theta(n,t,year))-sum(n$Map_res(l,n),Theta(n,t,year)))
+Linearization_prosp_line_pos(l,t,year)$prosp_lines(l)..      sum((tt,period)$((ord(tt) le ord(t))and (ord(period) le ord(year))),(1-x(l,tt,period)))*M    =g= power_flow(l,t,year) - B(l) * (sum(n$Map_send(l,n),Theta(n,t,year))-sum(n$Map_res(l,n),Theta(n,t,year))) * Sbase
 ;
 
 Theta_LB(n,t,year)$exist_nodes(n)..                           -3.1415         =l= Theta(n,t,year)
@@ -339,6 +343,7 @@ total_investment(l) = sum((t,year), Inv_costs(l,year) * x.l(l,t,year));
 
 execute_unload "check.gdx" 
 ;
+
 
 
 
