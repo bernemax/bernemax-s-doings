@@ -1,6 +1,6 @@
 # bernemax doings
 
-## Topic: documentation of the "learning by doing" process
+## Topic: documentation of the "learning by doing" process/ progress
 
 This repository serves as **training room**. 
 New stuff will be added if progress is made.
