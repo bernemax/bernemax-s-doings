@@ -298,9 +298,9 @@ Ex_line_neg_flow(l,t,year)$exist_lines(l)..                  power_flow(l,t,year
 Ex_line_pos_flow(l,t,year)$exist_lines(l)..                  power_flow(l,t,year) =l=  Line_cap(l)
 ;
 
-Prosp_line_neg_flow(l,t,year)$prosp_lines(l)..               power_flow(l,t,year) =g= -sum((tt,period)$((ord(tt) le ord(t))and (ord(period) le ord(year))),x(l,tt,period) * Line_cap(l))  * Sbase
+Prosp_line_neg_flow(l,t,year)$prosp_lines(l)..               power_flow(l,t,year) =g= -sum((tt,period)$((ord(tt) le ord(t))and (ord(period) le ord(year))),x(l,tt,period) * Line_cap(l)) 
 ;
-Prosp_line_pos_flow(l,t,year)$prosp_lines(l)..               power_flow(l,t,year) =l=  sum((tt,period)$((ord(tt) le ord(t))and (ord(period) le ord(year))),x(l,tt,period) * Line_cap(l))  * Sbase
+Prosp_line_pos_flow(l,t,year)$prosp_lines(l)..               power_flow(l,t,year) =l=  sum((tt,period)$((ord(tt) le ord(t))and (ord(period) le ord(year))),x(l,tt,period) * Line_cap(l))  
 ;
 Linearization_prosp_line_neg(l,t,year)$prosp_lines(l)..      -sum((tt,period)$((ord(tt) le ord(t))and (ord(period) le ord(year))),(1-x(l,tt,period)))*M   =l= power_flow(l,t,year) - B(l) * (sum(n$Map_send(l,n),Theta(n,t,year))-sum(n$Map_res(l,n),Theta(n,t,year))) * Sbase
 ;
